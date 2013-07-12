@@ -1,3 +1,22 @@
+# A small script to pull down the permissions requested by the top X number of paid or free apps ( change the URL )
+# in the Google Play store.
+# It does not use an API so will probably fail spectacularly when google update the play store.
+# Currently working fine as of 12/7/2013
+
+# Output is in comma seperated format:
+# Application URL,Application name, permission
+
+# == Version
+#
+# 1.0 Released
+#
+# == Usage
+#
+# No command line args as yet, change the uri string from _paid to _free to scrape a different list of apps
+#
+# Author :: Ian Williams (ian.williams@xiphosresearch.co.uk) (ian@fishermansenemy.com)
+# Licence :: Creative Commons Attribution-Share Alike
+
 require 'net/http'
 
 # how many pages to scrape?
@@ -20,7 +39,7 @@ while pagecount < pages do
 	# break the body up using > as the delimiter to get every element on a single line.
 	response.body.each_line('>') do |line| 
 		if line =~ /^*data-docid/ then
-			# locate the docid in the like
+			# locate the docid in the line
 			start = line.index("data-docid")
 			finish = line.index("\">",start)
 			appid = line[start+12..finish-1]
@@ -38,7 +57,7 @@ while pagecount < pages do
 					titleend = detailline.index("<",titlestart)
 
 					appname << ","+detailline[titlestart+18..titleend-1].gsub(/,/,"&#44;")
-				# locate the permission desctritions in the response
+				# locate the permission descriptions in the response
 				elsif detailline =~ /^*doc-permission-description"/ then 
 					permissionstart = detailline.index("doc-permission-description\">")
 					permissionend = detailline.index("<",permissionstart)
